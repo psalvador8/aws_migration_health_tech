@@ -66,5 +66,5 @@ This project is intended as a foundational infrastructure refactor for future ap
 
 
 
-[Medium Blog](https://medium.com/@yourusername) | 
+[Medium Blog](https://medium.com/@psalvador8/from-console-chaos-to-cdk-control-modernizing-healthcare-infrastructure-on-aws-a78f98049e2c) 
 
