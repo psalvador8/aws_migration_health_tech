@@ -15,20 +15,20 @@ Many organizations initially build their infrastructure manually using the AWS C
 
 While this approach can work for early experimentation, it creates long-term challenges such as:
 
-- infrastructure drift  
-- lack of reproducibility  
-- undocumented configuration  
-- inconsistent security policies  
-- difficulty creating new environments  
+- Infrastructure drift  
+- Lack of reproducibility  
+- Undocumented configuration  
+- Inconsistent security policies  
+- Difficulty creating new environments   
 
 This project demonstrates how to modernize a **healthcare web application infrastructure** by rebuilding it using **AWS Cloud Development Kit (CDK)**.
 
 The migration introduces:
 
 - Infrastructure as Code
-- version-controlled infrastructure
-- improved networking and security architecture
-- automated infrastructure deployment
+- Version-controlled infrastructure
+- Improved networking and security architecture
+- Automated infrastructure deployment
 
 This approach transforms manually configured resources into a **programmable, repeatable cloud architecture**.
 
@@ -139,11 +139,11 @@ CDK will synthesize the CloudFormation templates and provision the infrastructur
 
 The architecture incorporates several cloud-native reliability practices:
 
-- multi-AZ infrastructure support
-- private subnet isolation for backend services
-- managed database service (Amazon RDS)
-- security group segmentation
-- infrastructure defined as code for consistent deployments
+- Multi-AZ infrastructure support
+- Private subnet isolation for backend services
+- Managed database service (Amazon RDS)
+- Security group segmentation
+- Infrastructure defined as code for consistent deployments
 
 These improvements significantly increase operational reliability compared to manual infrastructure management.
 
@@ -160,6 +160,32 @@ Several architectural decisions were made during the migration process.
 - **Infrastructure as Code** enables repeatable and auditable deployments.
 
 These decisions transform the environment from manual configuration to **automated infrastructure management**.
+
+---
+
+# 🧩 Migration Challenges & Solutions
+
+During the migration from console-based infrastructure to Infrastructure as Code, several architectural challenges needed to be addressed.
+
+### Infrastructure Drift
+
+Console-created resources often evolve over time without proper documentation.  
+To solve this, all infrastructure components were redefined using AWS CDK constructs, ensuring the entire environment can be recreated from code.
+
+### Networking Consistency
+
+The legacy environment lacked a consistent network architecture.  
+The CDK implementation introduced a structured VPC layout with public and private subnets to improve isolation and security.
+
+### Security Standardization
+
+Manual configurations can lead to inconsistent security policies.  
+Security groups and IAM roles were recreated using least-privilege principles defined directly in the infrastructure code.
+
+### Environment Reproducibility
+
+The console-based setup made it difficult to replicate environments.  
+With AWS CDK, the infrastructure can now be deployed repeatedly across environments using version-controlled code.
 
 ---
 
@@ -204,11 +230,11 @@ Infrastructure provisioning becomes part of an automated deployment workflow.
 
 Future enhancements could include:
 
-- implementing Auto Scaling Groups
-- adding an Application Load Balancer
-- integrating CI/CD for infrastructure deployment
-- adding monitoring with CloudWatch dashboards
-- implementing automated security auditing
+- Implementing Auto Scaling Groups
+- Adding an Application Load Balancer
+- Integrating CI/CD for infrastructure deployment
+- Adding monitoring with CloudWatch dashboards
+- Implementing automated security auditing
 
 ---
 
