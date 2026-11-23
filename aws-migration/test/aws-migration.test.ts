@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import { AwsMigrationStack } from '../lib/aws-migration-stack';
 
 describe('AWS migration infrastructure', () => {
@@ -27,15 +27,11 @@ describe('AWS migration infrastructure', () => {
   });
 
   test('allows MySQL only from a security group', () => {
-    const securityGroups = template.findResources('AWS::EC2::SecurityGroup');
-    const ingressRules = Object.values(securityGroups).flatMap((group: any) => group.Properties?.SecurityGroupIngress || []);
-    expect(ingressRules).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        IpProtocol: 'tcp',
-        FromPort: 3306,
-        ToPort: 3306,
-        SourceSecurityGroupId: expect.anything(),
-      }),
-    ]));
+    template.hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+      IpProtocol: 'tcp',
+      FromPort: 3306,
+      ToPort: 3306,
+      SourceSecurityGroupId: Match.anyValue(),
+    });
   });
 });
