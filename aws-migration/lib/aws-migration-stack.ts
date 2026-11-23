@@ -26,13 +26,12 @@ export class AwsMigrationStack extends cdk.Stack {
       ],
     });
       
-   //Security Group for EC2 (Allows SSH & App Traffic) 
+   // Security Group for EC2 (HTTP only; administrative access via SSM Session Manager) 
     const ec2SecurityGroup = new ec2.SecurityGroup(this, 'EC2SecurityGroup', {
       vpc,
       allowAllOutbound: true,
       description: 'Security group for EC2 instance',
     });
-    ec2SecurityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), 'Allow SSH');
     ec2SecurityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(80), 'Allow HTTP');
 
   //Security Group for RDS (Allow traffic from EC2)
