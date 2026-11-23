@@ -1,17 +1,37 @@
-// import * as cdk from 'aws-cdk-lib';
-// import { Template } from 'aws-cdk-lib/assertions';
-// import * as AwsMigration from '../lib/aws-migration-stack';
+import * as cdk from 'aws-cdk-lib';
+import { Template, Match } from 'aws-cdk-lib/assertions';
+import { AwsMigrationStack } from '../lib/aws-migration-stack';
 
-// example test. To run these tests, uncomment this file along with the
-// example resource in lib/aws-migration-stack.ts
-test('SQS Queue Created', () => {
-//   const app = new cdk.App();
-//     // WHEN
-//   const stack = new AwsMigration.AwsMigrationStack(app, 'MyTestStack');
-//     // THEN
-//   const template = Template.fromStack(stack);
+describe('AWS migration infrastructure', () => {
+  const app = new cdk.App();
+  const stack = new AwsMigrationStack(app, 'TestMigrationStack');
+  const template = Template.fromStack(stack);
 
-//   template.hasResourceProperties('AWS::SQS::Queue', {
-//     VisibilityTimeout: 300
-//   });
+  test('creates a VPC and a MySQL database', () => {
+    template.resourceCountIs('AWS::EC2::VPC', 1);
+    template.resourceCountIs('AWS::RDS::DBInstance', 1);
+  });
+
+  test('does not expose SSH to the internet', () => {
+    const securityGroups = template.findResources('AWS::EC2::SecurityGroup');
+    for (const group of Object.values(securityGroups) as any[]) {
+      const ingress = group.Properties?.SecurityGroupIngress || [];
+      for (const rule of ingress) {
+        expect(rule).not.toEqual(expect.objectContaining({
+          CidrIp: '0.0.0.0/0',
+          FromPort: 22,
+          ToPort: 22,
+        }));
+      }
+    }
+  });
+
+  test('allows MySQL only from a security group', () => {
+    template.hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+      IpProtocol: 'tcp',
+      FromPort: 3306,
+      ToPort: 3306,
+      SourceSecurityGroupId: Match.anyValue(),
+    });
+  });
 });
