@@ -1,6 +1,6 @@
 # 🏥 AWS Infrastructure Migration with CDK (Healthcare Platform Modernization)
 
-This project demonstrates how legacy AWS infrastructure originally built through the AWS Management Console can be migrated to Infrastructure as Code using AWS CDK.
+This portfolio project demonstrates how a console-managed AWS infrastructure design can be represented as Infrastructure as Code using AWS CDK. It models a modernization scenario rather than documenting an independently verified production migration.
 
 The goal of the migration is to improve **repeatability, security, and maintainability** by replacing manual configuration with automated, version-controlled infrastructure.
 
@@ -44,9 +44,9 @@ This project illustrates the transformation from a manually configured AWS envir
 
 ![Legacy Architecture](docs/legacy-architecture.png)
 
-The original environment was provisioned manually through the AWS Management Console.
+The legacy diagram represents a manually provisioned environment used as the starting point for this modernization scenario.
 
-While the system functioned correctly, this approach introduced several operational challenges:
+Console-managed environments can introduce operational challenges such as:
 
 - Infrastructure configuration was not version-controlled
 - Environment replication was difficult
@@ -72,7 +72,7 @@ Key architectural improvements include:
 - Improved security segmentation
 - Automated environment provisioning
 
-This modernization significantly improves the **maintainability, scalability, and reliability** of the infrastructure.
+Defining these resources in code improves repeatability and reviewability. Application reliability and scalability have not been benchmarked.
 
 ---
 
@@ -100,7 +100,7 @@ The deployment workflow includes:
 3. Deploying resources using the AWS CDK CLI  
 4. Managing infrastructure updates through version-controlled code  
 
-This process allows infrastructure to be deployed consistently across multiple environments.
+This workflow supports repeatable infrastructure provisioning; deployments must still be tested and configured for each target environment.
 
 ---
 
@@ -119,17 +119,23 @@ Install AWS CDK globally:
 npm install -g aws-cdk
 ```
 
-Install project dependencies:
+From the repository root, enter the CDK app directory and install locked dependencies:
 
-```
-npm install
+```bash
+cd aws-migration
+npm ci
+npm run build
+npm test -- --runInBand
+npx cdk synth
 ```
 
-Deploy the infrastructure:
+Review the synthesized template and costs before deploying:
 
+```bash
+npx cdk deploy
 ```
-cdk deploy
-```
+
+**Lab warning:** The CDK stack defines an RDS database with `RemovalPolicy.DESTROY`. Deleting the stack can delete the database. This setting is intended for disposable environments, not databases containing important data. The EC2 security group also exposes HTTP (port 80) publicly; there is no HTTPS load balancer in this example.
 
 CDK will synthesize the CloudFormation templates and provision the infrastructure.
 
@@ -145,7 +151,7 @@ The architecture incorporates several cloud-native reliability practices:
 - Security group segmentation
 - Infrastructure defined as code for consistent deployments
 
-These improvements significantly increase operational reliability compared to manual infrastructure management.
+These design choices demonstrate network segmentation and repeatable provisioning; they do not establish measured improvements in uptime or scalability.
 
 ---
 
@@ -180,12 +186,12 @@ The CDK implementation introduced a structured VPC layout with public and privat
 ### Security Standardization
 
 Manual configurations can lead to inconsistent security policies.  
-Security groups and IAM roles were recreated using least-privilege principles defined directly in the infrastructure code.
+The CDK stack defines separate EC2 and RDS security groups and an EC2 role with the Systems Manager managed-instance policy. The database accepts MySQL connections from the EC2 security group.
 
 ### Environment Reproducibility
 
 The console-based setup made it difficult to replicate environments.  
-With AWS CDK, the infrastructure can now be deployed repeatedly across environments using version-controlled code.
+AWS CDK provides a repeatable definition of the infrastructure. Each deployment still requires appropriate account configuration and verification.
 
 ---
 
@@ -242,12 +248,15 @@ Future enhancements could include:
 
 ```
 ├── README.md
-├── bin/
-│   └── app.ts
-├── lib/
-│   └── infrastructure-stack.ts
-├── package.json
-├── cdk.json
+├── .github/workflows/cdk-validation.yml
+├── aws-migration/
+│   ├── bin/aws-migration.ts
+│   ├── lib/aws-migration-stack.ts
+│   ├── test/aws-migration.test.ts
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── cdk.json
+│   └── tsconfig.json
 └── docs/
     ├── legacy-architecture.png
     └── cdk-architecture.png
@@ -257,7 +266,7 @@ Future enhancements could include:
 
 # 💡 Key Takeaway
 
-Migrating infrastructure from manual console configuration to Infrastructure as Code dramatically improves reliability, security, and maintainability.
+Representing infrastructure as code improves reviewability, consistency, and maintainability; production security and reliability require further controls and validation.
 
 Using AWS CDK allows engineers to treat infrastructure as software — enabling version control, automation, and repeatable deployments.
 
